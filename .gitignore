@@ -1,2 +1,4 @@
 test/
 .vscode/
+build/
+hash_analysis

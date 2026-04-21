@@ -1,0 +1,12 @@
+A0A0A0  Anastasiya           86
+A0A0A1  Yuliya               15
+A0A0A2  Lyudmila             35
+A0A0A3  Vladimir             92
+A0A0A4  Mariya               21
+A0A0A5  Dmitriy              27
+A0A0A6  Nikolay              59
+A0A0A7  Anastasiya           26
+A0A0A8  Aleksandr            26
+A0A0A9  Grigoriy             36
+A0A0B0  Oksana               68
+A0A0B1  Tatyana              29
