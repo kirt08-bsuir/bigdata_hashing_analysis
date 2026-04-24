@@ -1,0 +1,6 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define HASH_CONSTANT_FOR_MID_SQUARE_METHOD 47
+
+#endif
