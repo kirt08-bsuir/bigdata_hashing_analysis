@@ -2,8 +2,11 @@
 #define HASH_MAP_H
 
 #include <stdlib.h>
+
 #include "base.h"
 
+
+typedef unsigned int (*HashFunction)(const char*, unsigned int);
 
 typedef struct OverflowNode {
     User user;
@@ -28,6 +31,10 @@ typedef struct HashTable {
 
 
 HashTable* hash_table_create(unsigned int num_buckets);
+
+int hash_table_insert(HashTable *hash_table, const User *user, HashFunction hash_func);
+
+void hash_table_show(const HashTable *hash_table);
 
 void hash_table_free(HashTable *hash_table);
 
