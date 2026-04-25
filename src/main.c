@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "base.h"
+#include "config.h"
 #include "data_gen.h"
 #include "hash_map.h"
 #include "hash_funcs.h"
@@ -11,7 +12,7 @@
 int main(void) {
     HashTable *hash_table = hash_table_create(20);
 
-    const unsigned int number = 200;
+    const unsigned int number = TOTAL_AMOUNT_OF_RECORDS;
     data_gen(number);
     
     User *users = get_users_from_file(number);

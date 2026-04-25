@@ -69,7 +69,7 @@ int hash_table_insert(HashTable *hash_table, const User *user, HashFunction hash
     }
 
     if (hash_table->overflow_count >= hash_table->overflow_capacity) {
-        printf("Theare isn't enough space in overflow part");
+        printf("Theare isn't enough space in overflow part\n");
         return 1;
     }
 
@@ -109,6 +109,11 @@ void hash_table_show(const HashTable *hash_table) {
                 cur = cur->next;
             }
         }
+    }
+
+    if (DEBUG) {
+        printf("Total amount: %d\n", hash_table->total_inserted);
+        printf("Overflow: %d\n", hash_table->overflow_count);
     }
 }
 
