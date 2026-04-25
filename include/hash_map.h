@@ -36,6 +36,8 @@ int hash_table_insert(HashTable *hash_table, const User *user, HashFunction hash
 
 void hash_table_show(const HashTable *hash_table);
 
+void hash_table_dump_to_file(const HashTable *hash_table, HashAlgo algo);
+
 void hash_table_free(HashTable *hash_table);
 
 #endif

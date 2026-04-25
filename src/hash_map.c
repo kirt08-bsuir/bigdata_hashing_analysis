@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "base.h"
 #include "config.h"
@@ -114,6 +115,62 @@ void hash_table_show(const HashTable *hash_table) {
     if (DEBUG) {
         printf("Total amount: %d\n", hash_table->total_inserted);
         printf("Overflow: %d\n", hash_table->overflow_count);
+    }
+}
+
+void hash_table_dump_to_file(const HashTable *hash_table, HashAlgo algo) {
+    if (hash_table == NULL) return;
+
+    const char *folder_name;
+    switch (algo) {
+        case HASH_ALGO_MID_SQUARE:
+            folder_name = FILENAME_HASH_ALGO_MID_SQUARE;
+            break;
+        case HASH_ALGO_SHIFT_FOLDING:
+            folder_name = FILENAME_HASH_ALGO_SHIFT_FOLDING;
+            break;
+        default:
+            printf("Error: Unknow hash algo");
+            return;
+    }
+    char filepath[256];
+    snprintf(filepath, sizeof(filepath), "%s/%u.txt", folder_name, hash_table->num_buckets);
+    FILE *file = fopen(filepath, "w");
+    if (file == NULL) {
+        printf("Error during opening the file: %s", filepath);
+        return;
+    }
+
+    fprintf(file, "HashTable output (Buckets: %u):\n", hash_table->num_buckets);
+    
+    for (unsigned int i = 0; i < hash_table->num_buckets; i++) {
+        fprintf(file, "Bucket number %d: \n", i);
+        
+        for (unsigned int j = 0; j < hash_table->buckets[i].count; j++) {
+            fprintf(file, "    User(%s, %s, %d)\n",
+                    hash_table->buckets[i].users[j].id,
+                    hash_table->buckets[i].users[j].name,
+                    hash_table->buckets[i].users[j].age
+            );
+        }
+        
+        if (hash_table->buckets[i].overflow != NULL) {
+            fprintf(file, "    Overflow:\n");
+            OverflowNode *cur = hash_table->buckets[i].overflow;
+            while (cur != NULL) {
+                fprintf(file, "    User(%s, %s, %d)\n", cur->user.id, cur->user.name, cur->user.age);
+                cur = cur->next;
+            }
+        }
+    }
+
+    fprintf(file, "Total amount: %d\n", hash_table->total_inserted);
+    fprintf(file, "Overflow: %d\n", hash_table->overflow_count);
+
+    fclose(file);
+    
+    if (DEBUG) {
+        printf("Данные хеш-таблицы успешно сохранены в %s\n", filepath);
     }
 }
 

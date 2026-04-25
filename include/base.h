@@ -7,4 +7,9 @@ typedef struct User {
     unsigned short age;
 } User;
 
+typedef enum {
+    HASH_ALGO_MID_SQUARE,
+    HASH_ALGO_SHIFT_FOLDING
+} HashAlgo;
+
 #endif

@@ -10,25 +10,34 @@
 
 
 int main(void) {
-    HashTable *hash_table = hash_table_create(20);
-
+    int res;
     const unsigned int number = TOTAL_AMOUNT_OF_RECORDS;
     data_gen(number);
     
     User *users = get_users_from_file(number);
     if (!users) return 1;
 
-    int res;
-    for (size_t i = 0; i < number; i++) {
-        res = hash_table_insert(hash_table, &users[i], hash_function_mid_square);
-        if (res == 1) {
-            printf("Error occuried\n");
-            return 1;
+    HashFunc hash_functions[] = {
+        hash_function_mid_square,
+        hash_function_shift_folding
+    };
+    const unsigned short hash_functions_size = sizeof(hash_functions) / sizeof(hash_functions[0]);
+
+    for (size_t func_number = 0; func_number < hash_functions_size; func_number++) {
+        HashTable *hash_table = hash_table_create(20);
+        for (size_t i = 0; i < number; i++) {
+            res = hash_table_insert(hash_table, &users[i], hash_functions[func_number]);
+            if (res == 1) {
+                printf("Error occuried\n");
+                return 1;
+            }
         }
+        if (func_number == 0) {
+            hash_table_dump_to_file(hash_table, HASH_ALGO_MID_SQUARE);
+        } else {
+            hash_table_dump_to_file(hash_table, HASH_ALGO_SHIFT_FOLDING);
+        }
+        hash_table_free(hash_table);
     }
-
-    
-    hash_table_show(hash_table);
-
     return 0;
 }

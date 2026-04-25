@@ -26,3 +26,7 @@ clean:
 	rm -rf $(BUILD_DIR) $(TARGET)
 
 .PHONY: all clean
+
+run: all
+	@mkdir -p data/mid_square data/shift_folding
+	@./hash_analysis
