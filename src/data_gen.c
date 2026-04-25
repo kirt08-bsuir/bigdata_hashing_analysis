@@ -4,10 +4,10 @@
 
 #include "data_gen.h"
 #include "base.h"
+#include "config.h"
 
 
 const unsigned short MAX_AGE = 100;
-const char FILENAME[] = "data/users.txt";
 
 static const char* names[] = {
     "Aleksandr", "Ekaterina", "Dmitriy", "Anastasiya", 
