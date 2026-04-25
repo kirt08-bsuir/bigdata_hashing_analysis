@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "data_gen.h"
+#include "base.h"
 
 
 const unsigned short MAX_AGE = 100;
@@ -84,7 +85,7 @@ int data_gen(unsigned int number) {
         return 1;
     }  
     
-    printf("The list of users has been successfully written to the file `users.txt`");
+    printf("The list of users has been successfully written to the file `users.txt`\n");
     free(users);
     return 0;
 }
