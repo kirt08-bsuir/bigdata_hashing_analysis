@@ -17,7 +17,7 @@ int main(void) {
     User *users = get_users_from_file(number);
     if (!users) return 1;
 
-    HashFunc hash_functions[] = {
+    HashFunction hash_functions[] = {
         hash_function_mid_square,
         hash_function_shift_folding
     };
@@ -32,6 +32,13 @@ int main(void) {
                 return 1;
             }
         }
+
+        char *test_string = "A0A1A0";
+        User* user = hash_table_search_by_id(hash_table, test_string, hash_functions[func_number]);
+        if (user == NULL) {
+            printf("Such user wasn't found\n");
+        }
+
         if (func_number == 0) {
             hash_table_dump_to_file(hash_table, HASH_ALGO_MID_SQUARE);
         } else {

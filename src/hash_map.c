@@ -11,7 +11,7 @@ static unsigned int calculate_bucket_capacity(unsigned int num_buckets) {
     return TOTAL_AMOUNT_OF_RECORDS / num_buckets;
 }
 
-HashTable* hash_table_create(unsigned int num_buckets) {
+HashTable* hash_table_create(const unsigned int num_buckets) {
     HashTable *hash_table = (HashTable*)malloc(sizeof(HashTable));
     if (hash_table == NULL) {
         printf("Error during allocating memory for hash_table");
@@ -56,7 +56,7 @@ HashTable* hash_table_create(unsigned int num_buckets) {
     return hash_table;
 }
 
-int hash_table_insert(HashTable *hash_table, const User *user, HashFunction hash_func) {
+int hash_table_insert(HashTable *hash_table, const User *user, const HashFunction hash_func) {
     if (hash_table == NULL) return 0;
 
     unsigned int idx = hash_func(user->id, hash_table->num_buckets);
@@ -89,6 +89,34 @@ int hash_table_insert(HashTable *hash_table, const User *user, HashFunction hash
     return 0;
 }
 
+User* hash_table_search_by_id(const HashTable *hash_table, const char *user_id, const HashFunction hash_func) {
+    if (hash_table == NULL || user_id == NULL) return NULL;
+    
+    unsigned int bucket_idx = hash_func(user_id, hash_table->num_buckets);
+    Bucket *bucket = &hash_table->buckets[bucket_idx];
+
+    for (unsigned int i = 0; i < bucket->count; i++) {
+        if (strcmp(bucket->users[i].id, user_id) == 0) {
+            if (DEBUG) {
+                printf("User %s with name: %s and age: %d\n", bucket->users[i].id, bucket->users[i].name, bucket->users[i].age);
+            }
+            return &bucket->users[i];
+        }
+    }
+
+    OverflowNode *cur = bucket->overflow;
+    while (cur != NULL) {
+        if (strcmp(cur->user.id, user_id) == 0) {
+            if (DEBUG) {
+                printf("User %s with name: %s and age: %d\n", cur->user.id, cur->user.name, cur->user.age);
+            }
+            return &cur->user;
+        }
+        cur = cur->next;
+    }
+    return NULL;
+}
+
 void hash_table_show(const HashTable *hash_table) {
     if (hash_table == NULL) return;
 
@@ -118,7 +146,7 @@ void hash_table_show(const HashTable *hash_table) {
     }
 }
 
-void hash_table_dump_to_file(const HashTable *hash_table, HashAlgo algo) {
+void hash_table_dump_to_file(const HashTable *hash_table, const HashAlgo algo) {
     if (hash_table == NULL) return;
 
     const char *folder_name;
@@ -170,7 +198,7 @@ void hash_table_dump_to_file(const HashTable *hash_table, HashAlgo algo) {
     fclose(file);
     
     if (DEBUG) {
-        printf("Данные хеш-таблицы успешно сохранены в %s\n", filepath);
+        printf("Hash table data has been successfully saved in %s\n", filepath);
     }
 }
 

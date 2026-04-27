@@ -3,7 +3,7 @@
 
 
 // comment line under to disable debug mode
-#define DEBUG 0
+#define DEBUG 1
 
 // used in hash_funcs
 #define HASH_CONSTANT_FOR_MID_SQUARE_METHOD 47

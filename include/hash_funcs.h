@@ -2,8 +2,6 @@
 #define HASH_FUNCS_H
 
 
-typedef unsigned int (*HashFunc)(const char*, unsigned int);
-
 // Метод средних квадратов
 unsigned int hash_function_mid_square(const char *id, unsigned int num_buckets);
 
