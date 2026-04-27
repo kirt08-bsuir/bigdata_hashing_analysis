@@ -1,3 +1,4 @@
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -34,10 +35,17 @@ int main(void) {
         }
 
         char *test_string = "A0A1A0";
+
+        clock_t start = clock();
+
         User* user = hash_table_search_by_id(hash_table, test_string, hash_functions[func_number]);
         if (user == NULL) {
             printf("Such user wasn't found\n");
         }
+
+        clock_t end = clock();
+        double duration = (double)(end - start) / CLOCKS_PER_SEC;
+        printf("Time: %f sek\n", duration);
 
         if (func_number == 0) {
             hash_table_dump_to_file(hash_table, HASH_ALGO_MID_SQUARE);
