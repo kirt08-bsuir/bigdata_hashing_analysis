@@ -8,20 +8,20 @@
 
 typedef struct OverflowNode {
     User user;
-    struct OverflowNode *next;
+    int next;
 } OverflowNode;
 
 typedef struct Bucket {
     User *users;
     unsigned int capacity;
     unsigned int count;
-    OverflowNode *overflow;
+    int overflow;
 } Bucket;
 
 typedef struct HashTable {
     Bucket *buckets;
     unsigned int num_buckets;
-    User *overflow_area;
+    OverflowNode *overflow_area;
     unsigned int overflow_capacity;
     unsigned int overflow_count;
     unsigned int total_inserted;

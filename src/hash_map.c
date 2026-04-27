@@ -30,7 +30,7 @@ HashTable* hash_table_create(const unsigned int num_buckets) {
         return NULL;
     }
 
-    hash_table->overflow_area = (User*)malloc(OVERFLOW_CAPACITY * sizeof(User));
+    hash_table->overflow_area = (OverflowNode*)malloc(OVERFLOW_CAPACITY * sizeof(OverflowNode));
     if (hash_table->overflow_area == NULL) {
         printf("Error during allocating memory for overflow area");
         free(hash_table->buckets);
@@ -50,7 +50,7 @@ HashTable* hash_table_create(const unsigned int num_buckets) {
             return NULL;
         }
 
-        hash_table->buckets[i].overflow = NULL;
+        hash_table->buckets[i].overflow = -1;
     }
 
     return hash_table;
@@ -77,15 +77,10 @@ int hash_table_insert(HashTable *hash_table, const User *user, const HashFunctio
         return 1;
     }
 
-    OverflowNode *new_overflow_node = (OverflowNode*)malloc(sizeof(OverflowNode));
-    if (new_overflow_node == NULL) {
-        printf("Error during allocation memory for new overflow node");
-        return 1;
-    }
-
-    new_overflow_node->user = *user;
-    new_overflow_node->next = bucket->overflow;
-    bucket->overflow = new_overflow_node;
+    int empty_overflow_idx = hash_table->overflow_count;
+    hash_table->overflow_area[empty_overflow_idx].user = *user;
+    hash_table->overflow_area[empty_overflow_idx].next = bucket->overflow;
+    bucket->overflow = empty_overflow_idx;
 
     hash_table->overflow_count++;
     hash_table->total_inserted++;
@@ -107,15 +102,19 @@ User* hash_table_search_by_id(const HashTable *hash_table, const char *user_id, 
         }
     }
 
-    OverflowNode *cur = bucket->overflow;
-    while (cur != NULL) {
-        if (strcmp(cur->user.id, user_id) == 0) {
+    int cur_idx = bucket->overflow;
+    while (cur_idx != -1) {
+        if (strcmp(hash_table->overflow_area[cur_idx].user.id, user_id) == 0) {
             if (DEBUG) {
-                printf("User %s with name: %s and age: %d\n", cur->user.id, cur->user.name, cur->user.age);
-            }
-            return &cur->user;
+                printf("User %s with name: %s and age: %d\n", 
+                        hash_table->overflow_area[cur_idx].user.id,
+                        hash_table->overflow_area[cur_idx].user.name,
+                        hash_table->overflow_area[cur_idx].user.age
+                    );
+                }
+            return &hash_table->overflow_area[cur_idx].user;
         }
-        cur = cur->next;
+        cur_idx = hash_table->overflow_area[cur_idx].next;
     }
     return NULL;
 }
@@ -133,12 +132,16 @@ void hash_table_show(const HashTable *hash_table) {
                     hash_table->buckets[i].users[j].age
             );
         }
-        if (hash_table->buckets[i].overflow != NULL) {
+        if (hash_table->buckets[i].overflow != -1) {
             printf("    Overflow:\n");
-            OverflowNode *cur = hash_table->buckets[i].overflow;
-            while (cur != NULL) {
-                printf("    User(%s, %s, %d)\n", cur->user.id, cur->user.name, cur->user.age);
-                cur = cur->next;
+            int cur_idx = hash_table->buckets[i].overflow;
+            while (cur_idx != -1) {
+                printf("    User(%s, %s, %d)\n",
+                        hash_table->overflow_area[cur_idx].user.id,
+                        hash_table->overflow_area[cur_idx].user.name,
+                        hash_table->overflow_area[cur_idx].user.age
+                );
+                cur_idx = hash_table->overflow_area[cur_idx].next;
             }
         }
     }
@@ -185,12 +188,16 @@ void hash_table_dump_to_file(const HashTable *hash_table, const HashAlgo algo) {
             );
         }
         
-        if (hash_table->buckets[i].overflow != NULL) {
+        if (hash_table->buckets[i].overflow != -1) {
             fprintf(file, "    Overflow:\n");
-            OverflowNode *cur = hash_table->buckets[i].overflow;
-            while (cur != NULL) {
-                fprintf(file, "    User(%s, %s, %d)\n", cur->user.id, cur->user.name, cur->user.age);
-                cur = cur->next;
+            int cur_idx = hash_table->buckets[i].overflow;
+            while (cur_idx != -1) {
+                fprintf(file, "    User(%s, %s, %d)\n",
+                        hash_table->overflow_area[cur_idx].user.id,
+                        hash_table->overflow_area[cur_idx].user.name,
+                        hash_table->overflow_area[cur_idx].user.age
+                );
+                cur_idx = hash_table->overflow_area[cur_idx].next;
             }
         }
     }
@@ -211,13 +218,6 @@ void hash_table_free(HashTable *hash_table) {
     for (unsigned int i = 0; i < hash_table->num_buckets; i++) {
         if (hash_table->buckets[i].users) {
             free(hash_table->buckets[i].users);
-        }
-
-        OverflowNode *cur = hash_table->buckets[i].overflow, *temp;
-        while (cur != NULL) {
-            temp = cur;
-            cur = cur->next;
-            free(temp);
         }
     }
 
