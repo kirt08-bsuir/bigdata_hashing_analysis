@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "data_gen.h"
 #include "base.h"
+#include "config.h"
+#include "data_gen.h"
 
 
 const unsigned short MAX_AGE = 100;
-const char FILENAME[] = "data/users.txt";
 
 static const char* names[] = {
     "Aleksandr", "Ekaterina", "Dmitriy", "Anastasiya", 
@@ -74,8 +74,10 @@ int data_gen(unsigned int number) {
         users[i].age = rand() % MAX_AGE;
     }
 
-    for (size_t i = 0; i < number; i++) {
-        printf("User %s with name: %s and age: %d\n", users[i].id, users[i].name, users[i].age);
+    if (DEBUG) {
+        for (size_t i = 0; i < number; i++) {
+            printf("User %s with name: %s and age: %d\n", users[i].id, users[i].name, users[i].age);
+        }
     }
 
     int res = save_users_to_file(users, number);

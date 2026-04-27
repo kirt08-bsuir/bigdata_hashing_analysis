@@ -1,30 +1,58 @@
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "base.h"
+#include "config.h"
 #include "data_gen.h"
 #include "hash_map.h"
 #include "hash_funcs.h"
+#include "file_funcs.h"
 
 
 int main(void) {
-    data_gen(12);
-    HashTable *hash_table = hash_table_create(20);
-    
-    User temp1_user = {"A0A0A1", "KIRT1", 11};
-    User temp2_user = {"A0A0B1", "KIRT2", 12};
-    User temp3_user = {"A0B9A3", "KIRT3", 13};
-
     int res;
-    res = hash_table_insert(hash_table, &temp1_user, hash_function_mid_square);
-    res = hash_table_insert(hash_table, &temp2_user, hash_function_mid_square);
-    res = hash_table_insert(hash_table, &temp3_user, hash_function_mid_square);
+    const unsigned int number = TOTAL_AMOUNT_OF_RECORDS;
+    data_gen(number);
+    
+    User *users = get_users_from_file(number);
+    if (!users) return 1;
 
-    if (res == 1) {
-        printf("Error occurs!");
-        return 1;
+    HashFunction hash_functions[] = {
+        hash_function_mid_square,
+        hash_function_shift_folding
+    };
+    const unsigned short hash_functions_size = sizeof(hash_functions) / sizeof(hash_functions[0]);
+
+    for (size_t func_number = 0; func_number < hash_functions_size; func_number++) {
+        HashTable *hash_table = hash_table_create(20);
+        for (size_t i = 0; i < number; i++) {
+            res = hash_table_insert(hash_table, &users[i], hash_functions[func_number]);
+            if (res == 1) {
+                printf("Error occuried\n");
+                return 1;
+            }
+        }
+
+        char *test_string = "A0A1A0";
+
+        clock_t start = clock();
+
+        User* user = hash_table_search_by_id(hash_table, test_string, hash_functions[func_number]);
+        if (user == NULL) {
+            printf("Such user wasn't found\n");
+        }
+
+        clock_t end = clock();
+        double duration = (double)(end - start) / CLOCKS_PER_SEC;
+        printf("Time: %f sek\n", duration);
+
+        if (func_number == 0) {
+            hash_table_dump_to_file(hash_table, HASH_ALGO_MID_SQUARE);
+        } else {
+            hash_table_dump_to_file(hash_table, HASH_ALGO_SHIFT_FOLDING);
+        }
+        hash_table_free(hash_table);
     }
-
-    hash_table_show(hash_table);
-
     return 0;
 }

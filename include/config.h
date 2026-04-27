@@ -1,10 +1,23 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+
+// comment line under to disable debug mode
+#define DEBUG 1
+
+// used in hash_funcs
 #define HASH_CONSTANT_FOR_MID_SQUARE_METHOD 47
 
-#define OVERFLOW_CAPACITY 200000
+//used in hash_map
 #define TOTAL_AMOUNT_OF_RECORDS 1000000
+#define OVERFLOW_PERCENT 20
+#define OVERFLOW_CAPACITY (TOTAL_AMOUNT_OF_RECORDS / 100) * OVERFLOW_PERCENT
+
+// used in data_gen
+#define FILES_PREFIX "data/"
+#define FILENAME FILES_PREFIX "users.txt" // shoud be "data/users.txt"
+#define FILENAME_HASH_ALGO_MID_SQUARE FILES_PREFIX "mid_square"
+#define FILENAME_HASH_ALGO_SHIFT_FOLDING FILES_PREFIX "shift_folding"
 
 
 #endif
