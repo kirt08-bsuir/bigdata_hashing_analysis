@@ -82,7 +82,7 @@ int data_gen(unsigned int number) {
 
     int res = save_users_to_file(users, number);
     if (res == 1) {
-        printf("Error during writing list of users to file. Please retry");
+        if (DEBUG) printf("Error during writing list of users to file. Please retry");
         free(users);
         return 1;
     }  

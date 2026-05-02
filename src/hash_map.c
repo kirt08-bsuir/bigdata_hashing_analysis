@@ -14,7 +14,7 @@ static unsigned int calculate_bucket_capacity(unsigned int num_buckets) {
 HashTable* hash_table_create(const unsigned int num_buckets) {
     HashTable *hash_table = (HashTable*)malloc(sizeof(HashTable));
     if (hash_table == NULL) {
-        printf("Error during allocating memory for hash_table");
+        if (DEBUG) printf("Error during allocating memory for hash_table");
         return NULL;
     }
 
@@ -25,14 +25,14 @@ HashTable* hash_table_create(const unsigned int num_buckets) {
     
     hash_table->buckets = (Bucket*)calloc(num_buckets, sizeof(Bucket));
     if (hash_table->buckets == NULL) {
-        printf("Error during allocating memory for buckets inside hash map");
+        if (DEBUG) printf("Error during allocating memory for buckets inside hash map");
         free(hash_table);
         return NULL;
     }
 
     hash_table->overflow_area = (OverflowNode*)malloc(OVERFLOW_CAPACITY * sizeof(OverflowNode));
     if (hash_table->overflow_area == NULL) {
-        printf("Error during allocating memory for overflow area");
+        if (DEBUG) printf("Error during allocating memory for overflow area");
         free(hash_table->buckets);
         free(hash_table);
         return NULL;
@@ -45,7 +45,7 @@ HashTable* hash_table_create(const unsigned int num_buckets) {
 
         hash_table->buckets[i].users = (User*)malloc(bucket_capacity * sizeof(User));
         if (hash_table->buckets[i].users == NULL) {
-            printf("Error during allocating memory for bucket number %d", i);
+            if (DEBUG) printf("Error during allocating memory for bucket number %d", i);
             hash_table_free(hash_table);
             return NULL;
         }
@@ -57,7 +57,7 @@ HashTable* hash_table_create(const unsigned int num_buckets) {
 }
 
 int hash_table_insert(HashTable *hash_table, const User *user, const HashFunction hash_func) {
-    if (hash_table == NULL) return 0;
+    if (hash_table == NULL) return 1;
 
     unsigned int idx = hash_func(user->id, hash_table->num_buckets);
     Bucket *bucket = &hash_table->buckets[idx];
@@ -152,8 +152,8 @@ void hash_table_show(const HashTable *hash_table) {
     }
 }
 
-void hash_table_dump_to_file(const HashTable *hash_table, const HashAlgo algo) {
-    if (hash_table == NULL) return;
+int hash_table_dump_to_file(const HashTable *hash_table, const HashAlgo algo) {
+    if (hash_table == NULL) return 1;
 
     const char *folder_name;
     switch (algo) {
@@ -164,15 +164,15 @@ void hash_table_dump_to_file(const HashTable *hash_table, const HashAlgo algo) {
             folder_name = FILENAME_HASH_ALGO_SHIFT_FOLDING;
             break;
         default:
-            printf("Error: Unknow hash algo");
+            if (DEBUG) printf("Error: Unknow hash algo");
             return;
     }
     char filepath[256];
     snprintf(filepath, sizeof(filepath), "%s/%u.txt", folder_name, hash_table->num_buckets);
     FILE *file = fopen(filepath, "w");
     if (file == NULL) {
-        printf("Error during opening the file: %s", filepath);
-        return;
+        if (DEBUG) printf("Error during opening the file: %s", filepath);
+        return 1;
     }
 
     fprintf(file, "HashTable output (Buckets: %u):\n", hash_table->num_buckets);
@@ -210,6 +210,7 @@ void hash_table_dump_to_file(const HashTable *hash_table, const HashAlgo algo) {
     if (DEBUG) {
         printf("Hash table data has been successfully saved in %s\n", filepath);
     }
+    return 0;
 }
 
 void hash_table_free(HashTable *hash_table) {

@@ -10,7 +10,7 @@
 
 //used in hash_map
 #define TOTAL_AMOUNT_OF_RECORDS 1000000
-#define OVERFLOW_PERCENT 20
+#define OVERFLOW_PERCENT 25
 #define OVERFLOW_CAPACITY (TOTAL_AMOUNT_OF_RECORDS / 100) * OVERFLOW_PERCENT
 
 // used in data_gen
@@ -19,5 +19,7 @@
 #define FILENAME_HASH_ALGO_MID_SQUARE FILES_PREFIX "mid_square"
 #define FILENAME_HASH_ALGO_SHIFT_FOLDING FILES_PREFIX "shift_folding"
 
+// if func throw an error we will try 3 more times
+#define COUNT_OF_RETRIES 3
 
 #endif
