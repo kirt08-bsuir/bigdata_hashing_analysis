@@ -36,7 +36,7 @@ User* hash_table_search_by_id(const HashTable *hash_table, const char *user_id, 
 
 void hash_table_show(const HashTable *hash_table);
 
-void hash_table_dump_to_file(const HashTable *hash_table, const HashAlgo algo);
+int hash_table_dump_to_file(const HashTable *hash_table, const HashAlgo algo);
 
 void hash_table_free(HashTable *hash_table);
 
