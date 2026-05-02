@@ -32,6 +32,56 @@ User* get_users_from_file(unsigned int number) {
     return users;
 }
 
+User* get_fake_users_from_file(unsigned int number) {
+    size_t total_number = number + DELTA_FAKE_USERS;
+    User *users = malloc(total_number * sizeof(User));
+    if (!users) {
+        if (DEBUG) printf("Error during allocation memmory for users\n");
+        return NULL;
+    }
+
+    FILE *in_file = fopen(FILENAME, "r");
+    if (!in_file) {
+        if (DEBUG) printf("Error during opening the file\n");
+        free(users);
+        return NULL;
+    }
+
+    size_t i = 0;
+    while (i < number && fscanf(in_file, "%6s %19s %hu", users[i].id, users[i].name, &users[i].age) == 3) i++;
+
+    fclose(in_file);
+
+    for (int j = 0; j < DELTA_FAKE_USERS; j++) {
+        sprintf(users[i + j].id, "X%05d", i); 
+        sprintf(users[i + j].name, "FakeUser_%d", i);
+        users[i + j].age = 99; 
+    }
+
+    for (size_t i = total_number - 1; i > 0; i--) {
+        size_t j = rand() % (i + 1);
+        
+        User temp = users[i];
+        users[i] = users[j];
+        users[j] = temp;
+    }
+
+    FILE *out_file = fopen(OUTPUT_FILENAME, "w");
+    if (!out_file) {
+        if (DEBUG) printf("Error during opening output file for fake users.\n");
+        free(users);
+        return NULL;
+    }
+
+    for (size_t i = 0; i < total_number; i++) {
+        fprintf(out_file, "%s %s %hu\n", users[i].id, users[i].name, users[i].age);
+    }
+
+    fclose(out_file);
+
+    return users;
+}
+
 int check_file_exist() {
     // return 1 if file doesn't exist else return 1
 

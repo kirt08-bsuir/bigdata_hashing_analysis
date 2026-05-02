@@ -95,9 +95,9 @@ User* hash_table_search_by_id(const HashTable *hash_table, const char *user_id, 
 
     for (unsigned int i = 0; i < bucket->count; i++) {
         if (strcmp(bucket->users[i].id, user_id) == 0) {
-            if (DEBUG) {
-                printf("User %s with name: %s and age: %d\n", bucket->users[i].id, bucket->users[i].name, bucket->users[i].age);
-            }
+            // if (DEBUG) {
+            //     printf("User %s with name: %s and age: %d\n", bucket->users[i].id, bucket->users[i].name, bucket->users[i].age);
+            // }
             return &bucket->users[i];
         }
     }
@@ -105,13 +105,13 @@ User* hash_table_search_by_id(const HashTable *hash_table, const char *user_id, 
     int cur_idx = bucket->overflow;
     while (cur_idx != -1) {
         if (strcmp(hash_table->overflow_area[cur_idx].user.id, user_id) == 0) {
-            if (DEBUG) {
-                printf("User %s with name: %s and age: %d\n", 
-                        hash_table->overflow_area[cur_idx].user.id,
-                        hash_table->overflow_area[cur_idx].user.name,
-                        hash_table->overflow_area[cur_idx].user.age
-                    );
-                }
+            // if (DEBUG) {
+            //     printf("User %s with name: %s and age: %d\n", 
+            //             hash_table->overflow_area[cur_idx].user.id,
+            //             hash_table->overflow_area[cur_idx].user.name,
+            //             hash_table->overflow_area[cur_idx].user.age
+            //         );
+            //     }
             return &hash_table->overflow_area[cur_idx].user;
         }
         cur_idx = hash_table->overflow_area[cur_idx].next;
